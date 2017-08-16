@@ -34,6 +34,13 @@ void Knight(int i,vector<Node*> &list);
 void analyze(vector<Node*> list);
 bool KingSafe();
 int main(){
+  //finding the kings posiiton
+  while(Board[KingPositionC/8][KingPositionC%8] != "A"){
+    KingPositionC++;
+  }
+  while(Board[KingPositionL/8][KingPositionL%8] != "a"){
+    KingPositionL++;
+  }
   analyze(PossibleMove());
   return 0;
 }
@@ -59,7 +66,7 @@ vector<Node*> PossibleMove(){
       Queen(i,list);
     }
     else if(Board[i/8][i%8] == "A"){
-      King(i,list);
+      //King(i,list);
     }
     else if(Board[i/8][i%8] == "N"){
       Knight(i,list);
@@ -71,7 +78,77 @@ void Pawn(int i,vector<Node*> &list){
 
 }
 void Rook(int i,vector<Node*> &list){
-
+  string oldpiece;
+  int r = i/8;
+  int c = i%8;
+  int temp = 1;
+  for(int j = -1;j<=1;j+=2){
+    if(c+temp*j < 8 && c+temp*j > -1){//Confident this will not arise to a problem
+      while(Board[r][c+temp*j] == " "){
+	oldpiece = Board[r][c+temp*j];
+	Board[r][c] = " ";
+	Board[r][c+temp*j] = "R";
+	if(KingSafe()){
+	  Node* name = new Node();
+	  name->oldx = r;
+	  name->oldy = c;
+	  name->newx = r;
+	  name->newy = c+temp*j;
+	  list.push_back(name);
+	}
+	Board[r][c] = "R";
+	Board[r][c+temp*j] = oldpiece;
+	temp++;
+      }
+      if(Board[r][c+temp*j] == "p" || Board[r][c+temp*j] == "r" || Board[r][c+temp*j] == "q" || Board[r][c+temp*j] == "b" || Board[r][c+temp*j] == "n" || Board[r][c+temp*j] == "a"){
+	oldpiece = Board[r][c+temp*j];
+	Board[r][c] = " ";
+	Board[r][c+temp*j] = "R";
+	if(KingSafe()){
+	  Node* name = new Node();
+	  name->oldx = r;
+	  name->oldy = c;
+	  name->newx = r;
+	  name->newy = c+temp*j;
+	  list.push_back(name);
+	}
+	Board[r][c] = "R";
+	Board[r][c+temp*j] = oldpiece;
+      }
+    }
+    temp = 1;
+    if(r+temp*j > -1 && r+temp*j < 8){
+      while(Board[r+temp*j][c] == " "){
+	oldpiece = Board[r+temp*j][c];
+	Board[r][c] = " ";
+	Board[r+temp*j][c] = "R";
+	if(KingSafe()){
+	  Node* name = new Node();
+	  name->oldx = r;
+	  name->oldy = c;
+	  name->newx = r+temp*j;
+	  name->newy = c;
+	}
+	Board[r][c] = "R";
+	Board[r+temp*j][c] = oldpiece;
+	temp++;
+      }
+      if(Board[r+temp*j][c] == "p" || Board[r+temp*j][c] == "r" || Board[r+temp*j][c] == "q" || Board[r+temp*j][c] == "b" || Board[r+temp*j][c] == "n" || Board[r+temp*j][c] == "a"){
+	oldpiece = Board[r+temp*j][c];
+	Board[r][c] = " ";
+	Board[r+temp*j][c] = "R";
+	if(KingSafe()){
+	  Node* name = new Node();
+	  name->oldx = r;
+	  name->oldy = c;
+	  name->newx = r+temp*j;
+	  name->newy = c;
+	}
+	Board[r][c] = "R";
+	Board[r+temp*j][c] = oldpiece;
+      }
+    }
+  }
 }
 void Bishop(int i,vector<Node*> &list){//done
   string oldpiece;
@@ -191,5 +268,20 @@ void Knight(int i,vector<Node*> &list){//pretty sure this works, might have acci
   }
 }
 bool KingSafe(){
+  //BIshop and queen
+  int temp = 1;
+  for(int i = -1;i <= 1;i += 2){
+    for(int j = -1;j <= 1;j+=2){
+      if(KingPositionC/8+temp*i > -1 && KingPositionC/8+temp*i < 8 && KingPositionC%8+temp*j > -1 && KingPositionC%8+temp*j < 8){
+	while(Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == " "){
+	  temp++;
+	}
+	if(Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == "b" || Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == "q"){
+	  return false;
+	}
+      }
+      temp = 1;
+    }
+  }
   return true;
 }
