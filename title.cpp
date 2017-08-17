@@ -462,5 +462,18 @@ bool KingSafe(){
     }
   }
   //pawn
+  if(KingPositionC>=16){
+    if(KingPositionC/8-1 > -1 && KingPositionC/8-1 < 8 && KingPositionC%8-1 > -1 && KingPositionC%8-1 < 8){
+      if(Board[KingPositionC/8-1][KingPositionC%8-1] == "p"){
+	return false;
+      }
+    }
+    if(KingPositionC/8-1 > -1 && KingPositionC/8-1 < 8 && KingPositionC%8+1 > -1 && KingPositionC%8+1 < 8){
+      if(Board[KingPositionC/8-1][KingPositionC%8+1] == "p"){
+        return false;
+      }
+    }
+  }
+  //King
   
 }
