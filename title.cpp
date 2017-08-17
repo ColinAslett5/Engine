@@ -69,7 +69,7 @@ vector<Node*> PossibleMove(){
       //King(i,list);
     }
     else if(Board[i/8][i%8] == "N"){
-      Knight(i,list);
+      //Knight(i,list);
     }
   }
   return list;
@@ -195,7 +195,47 @@ void Bishop(int i,vector<Node*> &list){//done
   }
 }
 void Queen(int i,vector<Node*> &list){
-  
+  string oldpiece;
+  int r = i/8;
+  int c = i%8;
+  int temp = 1;
+  for(int j = -1;j <= 1;j++){
+    for(int k = -1;k <= 1;k++){
+      if(j != 0 || k != 0){
+	while((r+temp*j > -1 && r+temp*j < 8 && c+temp*k > -1 && c+temp*k < 8) && (Board[r+temp*j][c+temp*k] == " ")){
+          oldpiece = Board[r+temp*j][c+temp*k];
+	  Board[r][c] = " ";
+	  Board[r+temp*j][c+temp*k] = "Q";
+	  if(KingSafe()){
+	    Node* name = new Node();
+	    name->oldx = r;
+	    name->oldy = c;
+            name->newx = r+temp*j;
+	    name->newy = c+temp*k;
+	    list.push_back(name);
+	  }
+	  Board[r][c] = "Q";
+	  Board[r+temp*j][c+temp*k] = oldpiece;
+	  temp++;
+	}
+	if(Board[r+temp*j][c+temp*k] == "p" || Board[r+temp*j][c+temp*k] == "r" || Board[r+temp*j][c+temp*k] == "b" || Board[r+temp*j][c+temp*k] == "q" || Board[r+temp*j][c+temp*k] == "a" || Board[r+temp*j][c+temp*k] == "n"){
+          oldpiece = Board[r+temp*j][c+temp*k];
+          Board[r][c] = " ";
+          Board[r+temp*j][c+temp*k] = "Q";
+          if(KingSafe()){
+            Node* name = new Node();
+            name->oldx = r;
+            name->oldy = c;
+            name->newx = r+temp*j;
+            name->newy = c+temp*k;
+            list.push_back(name);
+	}
+        Board[r][c] = "Q";
+        Board[r+temp*j][c+temp*k] = oldpiece;
+      }
+      temp = 1;//pretty sure this is in the right place
+    }
+  }
 }
 void King(int i,vector<Node*> &list){//almost, castling
   string oldpiece;
@@ -283,5 +323,19 @@ bool KingSafe(){
       temp = 1;
     }
   }
+  //Rook and Queen
+  /*
+  for(int i = -1;i <= 1;i+=2){
+    if(KingPositionC/8 > -1 && KingPositionC/8 < 8 && KingPositionC%8+temp*i > -1 && KingPositionC%8+temp*i < 8){
+      while(Board[KingPositionC/8][KingPositionC%8+temp*i] == " "){
+	temp++;
+      }
+      if(Board[KingPositionC/8][KingPositionC%8+temp*i] == "r" || Board[KingPositionC/8][KingPositionC%8+temp*i] == "q"){
+	return false;
+      }
+    }
+    temp = 1;
+  }
+  */
   return true;
 }
