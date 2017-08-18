@@ -53,7 +53,7 @@ int main(){
   int beta = 1000000;
   int alpha = -1000000;
   int player = 0;
-  draw();
+  //flipboard();
   analyze(depth,beta,alpha,player);
   return 0;
 }
@@ -69,14 +69,17 @@ int analyze(int depth,int beta,int alpha,int player){
   vector<Node*> list = PossibleMove();
   int size = list.size();
   if(depth == 0 || list.size() == 0){
+    cout << endl;
+    cout << endl;
+    cout << endl;
     cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
     return (rating()*(player*2-1));
   }
   player = 1-player;
   for(int i = 0;i < size;i++){
     string temp = Board[list[i]->newx][list[i]->newy];
+    cout << list[i]->oldx << list[i]->oldy << list[i]->newx << list[i]->newy << endl;
     MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
-    flipboard();
     int returnInt = analyze(depth-1,beta,alpha,player);
     flipboard();
     UndoMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece,temp);
@@ -150,21 +153,26 @@ int rating(){
 //flipping the board
 void flipboard(){
   string temp;
-  for(int i = 0;i < 64;i++){
+  string xx;
+  string yy;
+  for(int i = 0;i < 32;i++){
     int r = i/8;
     int c = i%8;
-    //if uppercase, make it lowercase
-    int count;
-    string test = Board[r][c];
-    for(int i = 0;i < test.length();i++){
-      char c = test[i];
-      cout << c;
+    xx = Board[r][c];
+    if(isupper(xx[0]) == true){
+      temp = tolower(xx[0]);
     }
-    if(isupper(c) == true){
-      temp[0] = c;
-      cout << temp;
+    else{
+      temp = toupper(xx[0]);
     }
-    cout << endl;
+    yy = Board[7-r][7-c];
+    if(isupper(yy[0]) == true){
+      Board[r][c] = tolower(yy[0]);
+    }
+    else{
+      Board[r][c] = toupper(yy[0]);
+    }
+    Board[7-r][7-c] = temp;
   }
   int Kingtemp = KingPositionC;
   KingPositionC=63-KingPositionL;
