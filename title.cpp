@@ -31,11 +31,12 @@ void Bishop(int i,vector<Node*> &list);
 void Queen(int i,vector<Node*> &list);
 void King(int i,vector<Node*> &list);
 void Knight(int i,vector<Node*> &list);
-string analyze(int depth,int beta,int alpha,int player);
+int analyze(int depth,int beta,int alpha,int player);
 void MakeMove(int oldx,int oldy,int newx,int newy,string piece);
 void UndoMove(int oldx,int oldy,int newx,int newy,string piece,string temp);
 bool KingSafe();
 void flipboard();//flipping the board for the computer
+int rating();
 int main(){
   //finding the kings posiiton
   while(Board[KingPositionC/8][KingPositionC%8] != "A"){
@@ -52,29 +53,95 @@ int main(){
   analyze(depth,beta,alpha,player);
   return 0;
 }
-string analyze(int depth,int beta,int alpha,int player){
+int analyze(int depth,int beta,int alpha,int player){
   vector<Node*> list = PossibleMove();
   int size = list.size();
-  
   if(depth == 0 || size == 0){
-    return "finsihed";
+    cout << "finsihed" << endl;
+    return (rating()*(player*2-1));
   }
   player = 1-player;
   for(int i = 0;i < size;i++){
     string temp = Board[list[i]->newx][list[i]->newy];
     MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
     flipboard();
-    analyze(depth-1,beta,alpha,player);
+    int returnInt = analyze(depth-1,beta,alpha,player);
     flipboard();
     UndoMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece,temp);
+    if(player == 0){
+      if(returnInt <= beta){
+	beta = returnInt;
+      }
+    }
+    else{
+      if(returnInt>alpha){
+	alpha = returnInt;
+      }
+    }
+    if(alpha >= beta){
+      if(player == 0){
+	return beta;
+      }
+      else{
+	return alpha;
+      }
+    }
   }    
-//cout << list[i]->oldx << list[i]->oldy << list[i]->newx << list[i]->newy << endl;
-  //}
-  return "a";
+  //cout << list[i]->oldx << list[i]->oldy << list[i]->newx << list[i]->newy << endl;
+  if(player == 0){
+    return beta;
+  }
+  else{
+    return alpha;
+  }
+  return 0;
 }
+int rating(){
+  return 2;
+}  
 //flipping the board
 void flipboard(){
-  
+  string temp;
+  for(int i = 0;i < 64;i++){
+    int r = i/8;
+    int c = i%8;
+    if(Board[r][c] == "p"){
+      Board[r][c] = "P";
+    }
+    else if(Board[r][c] == "P"){
+      Board[r][c] = "p";
+    }
+    if(Board[r][c] == "q"){
+      Board[r][c] = "Q";
+    }
+    else if(Board[r][c] == "Q"){
+      Board[r][c] = "q";
+    }
+    if(Board[r][c] == "n"){
+      Board[r][c] = "N";
+    }
+    else if(Board[r][c] == "N"){
+      Board[r][c] = "n";
+    }
+    if(Board[r][c] == "b"){
+      Board[r][c] = "B";
+    }
+    else if(Board[r][c] == "B"){
+      Board[r][c] = "b";
+    }
+    if(Board[r][c] == "r"){
+      Board[r][c] = "R";
+    }
+    else if(Board[r][c] == "R"){
+      Board[r][c] = "r";
+    }
+    if(Board[r][c] == "a"){
+      Board[r][c] = "A";
+    }
+    else if(Board[r][c] == "A"){
+      Board[r][c] = "a";
+    }
+  }
 }
 //making moves and undoing moves
 void MakeMove(int oldx,int oldy,int newx,int newy,string piece){
