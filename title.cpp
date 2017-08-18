@@ -21,7 +21,7 @@ struct Node{
   int oldy;
   int newx;
   int newy;
-  string temp = " ";//might not need the initialization, just for promoting pawns
+  string piece;//might not need the initialization, just for promoting pawns
 };
 //functions
 void Initiate();
@@ -55,7 +55,7 @@ vector<Node*> PossibleMove(){
   vector<Node*> list;//will contain all possible moves for this turn
   for(int i = 0;i < 64;i++){
     if(Board[i/8][i%8] == "P"){
-      //Pawn(i,list);
+      Pawn(i,list);
     }
     else if(Board[i/8][i%8] == "R"){
       Rook(i,list);
@@ -81,20 +81,97 @@ void Pawn(int i,vector<Node*> &list){
   int c = i%8;
   for(int j = -1;j <= 1; j+=2){//captures
     if(r-1 > -1 && r-1 < 8 && c+j > -1 && c+j < 8){
-      if((Board[r-1][c+j] == "a" || Board[r-1][c+j] == "r" || Board[r-1][c+j] == "b" || Board[r-1][c+j] == "q" || Board[r-1][c+j] == "n") && i >= 16){//cant promote
+      if((Board[r-1][c+j] == "a" || Board[r-1][c+j] == "r" || Board[r-1][c+j] == "b" || Board[r-1][c+j] == "q" || Board[r-1][c+j] == "n" || Board[r-1][c+j] == "p") && i >= 16){//cant promote
 	oldpiece = Board[r-1][c+j];
 	Board[r][c] = " ";
 	Board[r-1][c+j] = "P";
 	if(KingSafe()){
-	  Node* name = New Node();
+	  Node* name = new Node();
 	  name->oldx = r;
 	  name->oldy = c;
 	  name->newx = r-1;
 	  name->newy = c+j;
+	  list.push_back(name);
 	}
 	Board[r][c] = "P";
 	Board[r-1][c+j] = oldpiece;
       }
+    }
+    if(r-1 > -1 && r-1 < 8 && c+j > -1 && c+j < 8){
+      if((Board[r-1][c+j] == "a" || Board[r-1][c+j] == "r" || Board[r-1][c+j] == "b" || Board[r-1][c+j] == "q" || Board[r-1][c+j] == "n" || Board[r-1][c+j] == "p") && i < 16){
+	string temp[] = {"Q","R","B","N"};
+	for(int k = 0;k < 4;k++){
+	  oldpiece = Board[r-1][c+j];
+	  Board[r][c] = " ";
+	  Board[r-1][c+j] = temp[k];
+	  if(KingSafe()){
+	    Node* name = new Node();
+	    name->oldx = r;
+	    name->oldy = c;
+	    name->newx = r-1;
+	    name->newy = c+j;
+	    name->piece = temp[k];
+	    list.push_back(name);
+	  }
+	  Board[r][c] = "P";
+	  Board[r-1][c+j] = oldpiece;
+	}
+      } 
+    }
+  }
+  //moving pawn up one
+  if(r-1 > -1 && r-1 < 8 && c > -1 && c < 8){
+    if(Board[r-1][c] == " " && i >= 16){
+      oldpiece = Board[r-1][c];
+      Board[r][c] = " ";
+      Board[r-1][c] = "P";
+      if(KingSafe()){
+	Node* name = new Node();
+	name->oldx = r;
+	name->oldy = c;
+	name->newx = r-1;
+	name->newy = c;
+	list.push_back(name);
+      }
+      Board[r][c] = "P";
+      Board[r-1][c] = oldpiece;
+    }
+    if(Board[r-1][c] == " " && i < 16){
+      string temp[] = {"Q","R","B","N"};
+      for(int k = 0;k < 4;k++){
+	oldpiece = Board[r-1][c];
+	Board[r][c] = " ";
+	Board[r-1][c] = temp[k];
+	if(KingSafe()){
+	  Node* name = new Node();
+	  name->oldx = r;
+	  name->oldy = c;
+	  name->newx = r-1;
+	  name->newy = c;
+	  name->piece = temp[k];
+	  list.push_back(name);
+	}
+	Board[r][c] = "P";
+	Board[r-1][c] = oldpiece;
+      }
+    }
+  }
+  //moving up two squares
+  if(r-2 > -1 && r-2 < 8 && c > -1 && c < 8){
+    if(Board[r-1][c] == " " && Board[r-2][c] == " " && i >= 48){
+      oldpiece = Board[r-2][c];
+      Board[r][c] = " ";
+      Board[r-2][c] = "P";
+      if(KingSafe()){
+	Node* name = new Node();
+	name->oldx = r;
+	name->oldy = c;
+	name->newx = r-2;
+	name->newy = c;
+	list.push_back(name);
+      }
+      Board[r][c] = "P";
+      Board[r-2][c] = oldpiece;
     }
   }
 }
