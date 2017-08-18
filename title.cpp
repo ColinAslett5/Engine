@@ -1,4 +1,5 @@
 //chess engine using a bitboard, Colin Aslett
+//Debugging: g++ -g title.cpp then gdb title.cpp then backtrace and then frame #
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
@@ -52,7 +53,7 @@ int main(){
   int depth = 4;//setting the depth of the analysis
   int beta = 1000000;
   int alpha = -1000000;
-  int player = 0;
+  int player = 1;
   //flipboard();
   analyze(depth,beta,alpha,player);
   return 0;
@@ -72,16 +73,17 @@ int analyze(int depth,int beta,int alpha,int player){
     cout << endl;
     cout << endl;
     cout << endl;
-    cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
-    return (rating()*(player*2-1));
+    //cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
+    return (rating());//player*2-1
   }
   player = 1-player;
   for(int i = 0;i < size;i++){
     string temp = Board[list[i]->newx][list[i]->newy];
-    cout << list[i]->oldx << list[i]->oldy << list[i]->newx << list[i]->newy << endl;
+    draw();
     MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
     int returnInt = analyze(depth-1,beta,alpha,player);
-    flipboard();
+    //flipboard();
+    draw();
     UndoMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece,temp);
     if(player == 0){
       if(returnInt <= beta){
@@ -102,7 +104,6 @@ int analyze(int depth,int beta,int alpha,int player){
       }
     }
   }    
-  //cout << list[i]->oldx << list[i]->oldy << list[i]->newx << list[i]->newy << endl;
   if(player == 0){
     return beta;
   }
@@ -112,6 +113,7 @@ int analyze(int depth,int beta,int alpha,int player){
   return 0;
 }
 int rating(){
+  /*
   int rate;
   //pieces
   for(int i = 0;i < 64;i++){
@@ -148,10 +150,13 @@ int rating(){
       rate -= 9;
     }
   }
-  return rate;
+  */
+  return 2;
+  //return rate;
 }  
 //flipping the board
 void flipboard(){
+  //draw();
   string temp;
   string xx;
   string yy;
@@ -177,6 +182,7 @@ void flipboard(){
   int Kingtemp = KingPositionC;
   KingPositionC=63-KingPositionL;
   KingPositionL=63-Kingtemp;
+  //draw();
 }
 //making moves and undoing moves
 void MakeMove(int oldx,int oldy,int newx,int newy,string piece){
@@ -235,6 +241,7 @@ vector<Node*> PossibleMove(){
   return list;
 }
 void Pawn(int i,vector<Node*> &list){
+  /*
   string oldpiece;
   int r = i/8;
   int c = i%8;
@@ -333,6 +340,7 @@ void Pawn(int i,vector<Node*> &list){
       Board[r-2][c] = oldpiece;
     }
   }
+  */
 }
 void Rook(int i,vector<Node*> &list){
   string oldpiece;
@@ -346,12 +354,12 @@ void Rook(int i,vector<Node*> &list){
 	Board[r][c] = " ";
 	Board[r][c+temp*j] == "R";
 	if(KingSafe()){
-	  Node* name = new Node();
-	  name->oldx = r;
-	  name->oldy = c;
-	  name->newx = r;
-	  name->newy = c+temp*j;
 	  if(c+temp*j < 8 && c+temp*j > -1){
+	    Node* name = new Node();
+	    name->oldx = r;
+	    name->oldy = c;
+	    name->newx = r;
+	    name->newy = c+temp*j;
 	    list.push_back(name);
 	  }
 	}
@@ -364,12 +372,12 @@ void Rook(int i,vector<Node*> &list){
         Board[r][c] = " ";
         Board[r][c+temp*j] == "R";
         if(KingSafe()){
-          Node* name = new Node();
-          name->oldx = r;
-          name->oldy = c;
-          name->newx = r;
-	  name->newy = c+temp*j;
 	  if(c+temp*j > -1 && c+temp*j < 8){
+	    Node* name = new Node();
+	    name->oldx = r;
+	    name->oldy = c;
+	    name->newx = r;
+	    name->newy = c+temp*j;
 	    list.push_back(name);
 	  }
         }
@@ -384,13 +392,13 @@ void Rook(int i,vector<Node*> &list){
         Board[r][c] = " ";
         Board[r+temp*j][c] == "R";
         if(KingSafe()){
+	  if(r+temp*j > -1 && r+temp*j < 8){
           Node* name = new Node();
           name->oldx = r;
           name->oldy = c;
           name->newx = r+temp*j;
           name->newy = c;
-	  if(r+temp*j > -1 && r+temp*j < 8){
-	    list.push_back(name);
+	  list.push_back(name);
 	  }
         }
         Board[r][c] = "R";
@@ -402,13 +410,13 @@ void Rook(int i,vector<Node*> &list){
         Board[r][c] = " ";
         Board[r+temp*j][c] == "R";
         if(KingSafe()){
+	  if(r+temp*j > -1 && r+temp*j < 8 && c > -1 && c < 8){
           Node* name = new Node();
-          name->oldx = r;
+	  name->oldx = r;
           name->oldy = c;
           name->newx = r+temp*j;
           name->newy = c;
-	  if(r+temp*j > -1 && r+temp*j < 8){
-	    list.push_back(name);
+	  list.push_back(name);
 	  }
         }
         Board[r][c] = "R";
@@ -521,13 +529,13 @@ ROOK PART
         Board[r][c] = " ";
         Board[r][c+temp*j] == "Q";
         if(KingSafe()){
+	  if(c+temp*j < 8 && c+temp*j > -1){
           Node* name = new Node();
           name->oldx = r;
           name->oldy = c;
           name->newx = r;
           name->newy = c+temp*j;
-          if(c+temp*j < 8 && c+temp*j > -1){
-            list.push_back(name);
+          list.push_back(name);
           }
         }
         Board[r][c] = "Q";
@@ -540,13 +548,13 @@ emp*j] == "n" || Board[r][c+temp*j] == "a"){
         Board[r][c] = " ";
         Board[r][c+temp*j] == "Q";
         if(KingSafe()){
-          Node* name = new Node();
+	  if(c+temp*j > -1 && c+temp*j < 8){
+	  Node* name = new Node();
           name->oldx = r;
           name->oldy = c;
           name->newx = r;
           name->newy = c+temp*j;
-          if(c+temp*j > -1 && c+temp*j < 8){
-            list.push_back(name);
+          list.push_back(name);
           }
         }
         Board[r][c] = "Q";
@@ -560,13 +568,13 @@ emp*j] == "n" || Board[r][c+temp*j] == "a"){
         Board[r][c] = " ";
         Board[r+temp*j][c] == "Q";
         if(KingSafe()){
+	  if(r+temp*j > -1 && r+temp*j < 8){
           Node* name = new Node();
           name->oldx = r;
           name->oldy = c;
           name->newx = r+temp*j;
           name->newy = c;
-          if(r+temp*j > -1 && r+temp*j < 8){
-            list.push_back(name);
+          list.push_back(name);
           }
         }
         Board[r][c] = "Q";
@@ -579,13 +587,13 @@ emp*j] == "n" || Board[r][c+temp*j] == "a"){
         Board[r][c] = " ";
         Board[r+temp*j][c] == "Q";
         if(KingSafe()){
-          Node* name = new Node();
+	  if(r+temp*j > -1 && r+temp*j < 8){
+	  Node* name = new Node();
           name->oldx = r;
           name->oldy = c;
           name->newx = r+temp*j;
           name->newy = c;
-          if(r+temp*j > -1 && r+temp*j < 8){
-            list.push_back(name);
+          list.push_back(name);
           }
         }
         Board[r][c] = "Q";
@@ -642,7 +650,7 @@ void Knight(int i,vector<Node*> &list){//pretty sure this works, might have acci
 	    name->newy = c+k*2;
 	    list.push_back(name);
 	  }
-	  Board[r][c] = "K";
+	  Board[r][c] = "N";
 	  Board[r+j][c+k*2] = oldpiece;
 	}
       }
@@ -658,7 +666,7 @@ void Knight(int i,vector<Node*> &list){//pretty sure this works, might have acci
 	    name->newy = c+k;
 	    list.push_back(name);
 	  }
-	  Board[r][c] = "K";
+	  Board[r][c] = "N";
 	  Board[r+j*2][c+k] = oldpiece;
 	}
       }
@@ -706,12 +714,12 @@ bool KingSafe(){
   for(int i = -1;i <= 1;i+=2){
     for(int j = -1;j <= 1;j+=2){
       if(KingPositionC/8+i > -1 && KingPositionC/8+i < 8 && KingPositionC%8+j*2 > -1 && KingPositionC%8+j*2 < 8){
-	if(Board[KingPositionC/8+i][KingPositionC%8+j*2] == "k"){
+	if(Board[KingPositionC/8+i][KingPositionC%8+j*2] == "n"){
 	  return false;
 	}
       }
       if(KingPositionC/8+i*2 > -1 && KingPositionC/8+i*2 < 8 && KingPositionC%8+j > -1 && KingPositionC%8+j < 8){
-	if(Board[KingPositionC/8+i*2][KingPositionC%8+j*2] == "k"){
+	if(Board[KingPositionC/8+i*2][KingPositionC%8+j*2] == "n"){
 	  return false;
 	}
       }
