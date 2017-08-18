@@ -12,7 +12,7 @@ string Board[8][8]={
             {"p","p","p","p","p","p","p","p"},
             {" "," "," "," "," "," "," "," "},
             {" "," "," "," "," "," "," "," "},
-            {" "," "," "," ","Q"," "," "," "},
+            {" "," "," "," "," "," "," "," "},
             {" "," "," "," "," "," "," "," "},
             {"P","P","P","P","P","P","P","P"},
             {"R","N","B","Q","A","B","N","R"}};
@@ -21,6 +21,7 @@ struct Node{
   int oldy;
   int newx;
   int newy;
+  string temp = " ";//might not need the initialization, just for promoting pawns
 };
 //functions
 void Initiate();
@@ -57,25 +58,45 @@ vector<Node*> PossibleMove(){
       //Pawn(i,list);
     }
     else if(Board[i/8][i%8] == "R"){
-      //Rook(i,list);
+      Rook(i,list);
     }
     else if(Board[i/8][i%8] == "B"){
-      //Bishop(i,list);
+      Bishop(i,list);
     }
     else if(Board[i/8][i%8] == "Q"){
       Queen(i,list);
     }
     else if(Board[i/8][i%8] == "A"){
-      //King(i,list);
+      King(i,list);
     }
     else if(Board[i/8][i%8] == "N"){
-      //Knight(i,list);
+      Knight(i,list);
     }
   }
   return list;
 }
 void Pawn(int i,vector<Node*> &list){
-
+  string oldpiece;
+  int r = i/8;
+  int c = i%8;
+  for(int j = -1;j <= 1; j+=2){//captures
+    if(r-1 > -1 && r-1 < 8 && c+j > -1 && c+j < 8){
+      if((Board[r-1][c+j] == "a" || Board[r-1][c+j] == "r" || Board[r-1][c+j] == "b" || Board[r-1][c+j] == "q" || Board[r-1][c+j] == "n") && i >= 16){//cant promote
+	oldpiece = Board[r-1][c+j];
+	Board[r][c] = " ";
+	Board[r-1][c+j] = "P";
+	if(KingSafe()){
+	  Node* name = New Node();
+	  name->oldx = r;
+	  name->oldy = c;
+	  name->newx = r-1;
+	  name->newy = c+j;
+	}
+	Board[r][c] = "P";
+	Board[r-1][c+j] = oldpiece;
+      }
+    }
+  }
 }
 void Rook(int i,vector<Node*> &list){
   string oldpiece;
@@ -445,7 +466,6 @@ bool KingSafe(){
     }
     temp = 1;
   }
-  return true;
   //Knight
   for(int i = -1;i <= 1;i+=2){
     for(int j = -1;j <= 1;j+=2){
@@ -475,5 +495,16 @@ bool KingSafe(){
     }
   }
   //King
-  
+    for(int i = -1;i <= 1;i++){
+      for(int j = -1;j <= 1;j++){
+        if(i != 0 || j != 0){
+          if(KingPositionC/8+i > -1 && KingPositionC/8+i < 8 && KingPositionC%8+j > -1 && KingPositionC%8+j < 8){
+            if(Board[KingPositionC/8+i][KingPositionC%8+j] == "a"){
+              return false;
+            }
+          }
+        }
+      }
+    }
+  return true;
 }
