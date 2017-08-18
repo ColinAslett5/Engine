@@ -1,6 +1,8 @@
 //chess engine using a bitboard, Colin Aslett
 #include <iostream>
 #include <string.h>
+#include <stdio.h>
+#include <ctype.h>
 #include <vector>
 using namespace std;
 //global board
@@ -37,6 +39,7 @@ void UndoMove(int oldx,int oldy,int newx,int newy,string piece,string temp);
 bool KingSafe();
 void flipboard();//flipping the board for the computer
 int rating();
+void draw();
 int main(){
   //finding the kings posiiton
   while(Board[KingPositionC/8][KingPositionC%8] != "A"){
@@ -50,14 +53,23 @@ int main(){
   int beta = 1000000;
   int alpha = -1000000;
   int player = 0;
+  draw();
   analyze(depth,beta,alpha,player);
   return 0;
+}
+void draw(){
+  for(int i = 0;i < 8;i++){
+    for(int b = 0;b < 8;b++){
+      cout << Board[i][b];
+    }
+    cout << endl;
+  }
 }
 int analyze(int depth,int beta,int alpha,int player){
   vector<Node*> list = PossibleMove();
   int size = list.size();
-  if(depth == 0 || size == 0){
-    cout << "finsihed" << endl;
+  if(depth == 0 || list.size() == 0){
+    cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
     return (rating()*(player*2-1));
   }
   player = 1-player;
@@ -97,7 +109,43 @@ int analyze(int depth,int beta,int alpha,int player){
   return 0;
 }
 int rating(){
-  return 2;
+  int rate;
+  //pieces
+  for(int i = 0;i < 64;i++){
+    int r = i/8;
+    int c = i%8;
+    if(Board[r][c] == "P"){
+      rate++;
+    }
+    if(Board[r][c] == "R"){
+      rate += 5;
+    }
+    if(Board[r][c] == "B"){
+      rate += 3;
+    }
+    if(Board[r][c] == "N"){
+      rate += 3;
+    }
+    if(Board[r][c] == "Q"){
+      rate += 9;
+    }
+    if(Board[r][c] == "p"){
+      rate--;
+    }
+    if(Board[r][c] == "r"){
+      rate -= 5;
+    }
+    if(Board[r][c] == "b"){
+      rate -= 3;
+    }
+    if(Board[r][c] == "n"){
+      rate -= 3;
+    }
+    if(Board[r][c] == "q"){
+      rate -= 9;
+    }
+  }
+  return rate;
 }  
 //flipping the board
 void flipboard(){
@@ -105,43 +153,22 @@ void flipboard(){
   for(int i = 0;i < 64;i++){
     int r = i/8;
     int c = i%8;
-    if(Board[r][c] == "p"){
-      Board[r][c] = "P";
+    //if uppercase, make it lowercase
+    int count;
+    string test = Board[r][c];
+    for(int i = 0;i < test.length();i++){
+      char c = test[i];
+      cout << c;
     }
-    else if(Board[r][c] == "P"){
-      Board[r][c] = "p";
+    if(isupper(c) == true){
+      temp[0] = c;
+      cout << temp;
     }
-    if(Board[r][c] == "q"){
-      Board[r][c] = "Q";
-    }
-    else if(Board[r][c] == "Q"){
-      Board[r][c] = "q";
-    }
-    if(Board[r][c] == "n"){
-      Board[r][c] = "N";
-    }
-    else if(Board[r][c] == "N"){
-      Board[r][c] = "n";
-    }
-    if(Board[r][c] == "b"){
-      Board[r][c] = "B";
-    }
-    else if(Board[r][c] == "B"){
-      Board[r][c] = "b";
-    }
-    if(Board[r][c] == "r"){
-      Board[r][c] = "R";
-    }
-    else if(Board[r][c] == "R"){
-      Board[r][c] = "r";
-    }
-    if(Board[r][c] == "a"){
-      Board[r][c] = "A";
-    }
-    else if(Board[r][c] == "A"){
-      Board[r][c] = "a";
-    }
+    cout << endl;
   }
+  int Kingtemp = KingPositionC;
+  KingPositionC=63-KingPositionL;
+  KingPositionL=63-Kingtemp;
 }
 //making moves and undoing moves
 void MakeMove(int oldx,int oldy,int newx,int newy,string piece){
