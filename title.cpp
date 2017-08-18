@@ -4,7 +4,6 @@
 #include <vector>
 using namespace std;
 //global board
-bool white = true;//computer is white
 static int KingPositionC;
 static int KingPositionL;
 string Board[8][8]={
@@ -32,8 +31,11 @@ void Bishop(int i,vector<Node*> &list);
 void Queen(int i,vector<Node*> &list);
 void King(int i,vector<Node*> &list);
 void Knight(int i,vector<Node*> &list);
-void analyze(vector<Node*> list);
+string analyze(int depth,int beta,int alpha,int player);
+void MakeMove(int oldx,int oldy,int newx,int newy,string piece);
+void UndoMove(int oldx,int oldy,int newx,int newy,string piece,string temp);
 bool KingSafe();
+void flipboard();//flipping the board for the computer
 int main(){
   //finding the kings posiiton
   while(Board[KingPositionC/8][KingPositionC%8] != "A"){
@@ -42,15 +44,70 @@ int main(){
   while(Board[KingPositionL/8][KingPositionL%8] != "a"){
     KingPositionL++;
   }
-  analyze(PossibleMove());
+  //variables for alpha beta tree
+  int depth = 4;//setting the depth of the analysis
+  int beta = 1000000;
+  int alpha = -1000000;
+  int player = 0;
+  analyze(depth,beta,alpha,player);
   return 0;
 }
-void analyze(vector<Node*> list){
+string analyze(int depth,int beta,int alpha,int player){
+  vector<Node*> list = PossibleMove();
   int size = list.size();
+  
+  if(depth == 0 || size == 0){
+    return "finsihed";
+  }
+  player = 1-player;
   for(int i = 0;i < size;i++){
-    cout << list[i]->oldx << list[i]->oldy << list[i]->newx << list[i]->newy << endl;
+    string temp = Board[list[i]->newx][list[i]->newy];
+    MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
+    flipboard();
+    analyze(depth-1,beta,alpha,player);
+    flipboard();
+    UndoMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece,temp);
+  }    
+//cout << list[i]->oldx << list[i]->oldy << list[i]->newx << list[i]->newy << endl;
+  //}
+  return "a";
+}
+//flipping the board
+void flipboard(){
+  
+}
+//making moves and undoing moves
+void MakeMove(int oldx,int oldy,int newx,int newy,string piece){
+  if(piece == "Q" || piece == "R" || piece == "B" || piece == "N"){//should work
+    Board[oldx][oldy] = " ";
+    Board[newx][newy] = piece;
+  }
+  else{
+    Board[newx][newy] = Board[oldx][oldy];
+    Board[oldx][oldy] = " ";
+    if(Board[newx][newy] == "A"){
+      KingPositionC = 8*newx+newy;
+    }
   }
 }
+void UndoMove(int oldx,int oldy,int newx,int newy,string piece,string temp){
+  if(piece == "Q" || piece == "R" || piece == "B" || piece == "N"){
+    Board[oldx][oldy] = "P";
+    Board[newx][newy] = temp;
+  }
+  else{
+    Board[oldx][oldy] = Board[newx][newy];
+    Board[newx][newy] = temp;
+    if(Board[oldx][oldy] == "A"){
+      KingPositionC = 8*oldx+oldy;
+    }
+  }
+}
+/*
+  everything below is pieces
+  and kingsafe checks
+
+*/
 vector<Node*> PossibleMove(){
   vector<Node*> list;//will contain all possible moves for this turn
   for(int i = 0;i < 64;i++){
