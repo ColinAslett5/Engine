@@ -53,7 +53,7 @@ int main(){
   int depth = 4;//setting the depth of the analysis
   int beta = 1000000;
   int alpha = -1000000;
-  int player = 1;
+  int player = 0;
   //flipboard();
   analyze(depth,beta,alpha,player);
   return 0;
@@ -70,20 +70,19 @@ int analyze(int depth,int beta,int alpha,int player){
   vector<Node*> list = PossibleMove();
   int size = list.size();
   if(depth == 0 || list.size() == 0){
-    cout << endl;
-    cout << endl;
-    cout << endl;
+    //cout << endl;
+    //cout << endl;
+    //cout << endl;
     //cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
-    return (rating());//player*2-1
+    return (rating()*(player*2-1));
   }
   player = 1-player;
   for(int i = 0;i < size;i++){
     string temp = Board[list[i]->newx][list[i]->newy];
-    draw();
+    //draw();
     MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
     int returnInt = analyze(depth-1,beta,alpha,player);
     //flipboard();
-    draw();
     UndoMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece,temp);
     if(player == 0){
       if(returnInt <= beta){
@@ -352,7 +351,7 @@ void Rook(int i,vector<Node*> &list){
       while(Board[r][c+temp*j] == " "){
 	oldpiece = Board[r][c+temp*j];
 	Board[r][c] = " ";
-	Board[r][c+temp*j] == "R";
+	Board[r][c+temp*j] = "R";
 	if(KingSafe()){
 	  if(c+temp*j < 8 && c+temp*j > -1){
 	    Node* name = new Node();
@@ -365,7 +364,13 @@ void Rook(int i,vector<Node*> &list){
 	}
 	Board[r][c] = "R";
 	Board[r][c+temp*j] = oldpiece;
-	temp++;
+	temp++;//maybe should be inside of the if statement
+	if(c+temp*j < 8 && c+temp*j > -1){
+	  
+	}
+	else{
+	  break;
+	}
       }
       if(Board[r][c+temp*j] == "r" || Board[r][c+temp*j] == "p" || Board[r][c+temp*j] == "q" || Board[r][c+temp*j] == "b" || Board[r][c+temp*j] == "n" || Board[r][c+temp*j] == "a"){
 	oldpiece = Board[r][c+temp*j];
@@ -431,6 +436,7 @@ void Bishop(int i,vector<Node*> &list){//done
   int r = i/8;
   int c = i%8;
   int temp = 1;
+  cout << endl;
   for(int j = -1;j <= 1;j+=2){
     for(int k = -1;k <= 1;k += 2){
       if(r+temp*j > -1 && r+temp*j < 8 && c+temp*k > -1 && c+temp*k < 8){//make sure it is in bounds for the array
