@@ -1,5 +1,5 @@
 //chess engine using a bitboard, Colin Aslett
-//Debugging: g++ -g title.cpp then gdb title.cpp then backtrace and then frame #
+//Debugging: g++ -g -o title title.cpp then gdb title.exe then backtrace and then frame #
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
@@ -70,19 +70,18 @@ int analyze(int depth,int beta,int alpha,int player){
   vector<Node*> list = PossibleMove();
   int size = list.size();
   if(depth == 0 || list.size() == 0){
-    //cout << endl;
-    //cout << endl;
-    //cout << endl;
-    //cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
     return (rating()*(player*2-1));
   }
   player = 1-player;
   for(int i = 0;i < size;i++){
     string temp = Board[list[i]->newx][list[i]->newy];
-    //draw();
     MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
     int returnInt = analyze(depth-1,beta,alpha,player);
-    //flipboard();
+    flipboard();
     UndoMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece,temp);
     if(player == 0){
       if(returnInt <= beta){
@@ -112,7 +111,6 @@ int analyze(int depth,int beta,int alpha,int player){
   return 0;
 }
 int rating(){
-  /*
   int rate;
   //pieces
   for(int i = 0;i < 64;i++){
@@ -149,9 +147,7 @@ int rating(){
       rate -= 9;
     }
   }
-  */
-  return 2;
-  //return rate;
+  return rate;
 }  
 //flipping the board
 void flipboard(){
@@ -240,7 +236,6 @@ vector<Node*> PossibleMove(){
   return list;
 }
 void Pawn(int i,vector<Node*> &list){
-  /*
   string oldpiece;
   int r = i/8;
   int c = i%8;
@@ -339,7 +334,6 @@ void Pawn(int i,vector<Node*> &list){
       Board[r-2][c] = oldpiece;
     }
   }
-  */
 }
 void Rook(int i,vector<Node*> &list){
   string oldpiece;
@@ -436,7 +430,6 @@ void Bishop(int i,vector<Node*> &list){//done
   int r = i/8;
   int c = i%8;
   int temp = 1;
-  cout << endl;
   for(int j = -1;j <= 1;j+=2){
     for(int k = -1;k <= 1;k += 2){
       if(r+temp*j > -1 && r+temp*j < 8 && c+temp*k > -1 && c+temp*k < 8){//make sure it is in bounds for the array
@@ -686,6 +679,12 @@ bool KingSafe(){
     for(int j = -1;j <= 1;j+=2){
       if(KingPositionC/8+temp*i > -1 && KingPositionC/8+temp*i < 8 && KingPositionC%8+temp*j > -1 && KingPositionC%8+temp*j < 8){
 	while(Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == " "){
+	if(KingPositionC/8+temp*i < 7 && KingPositionC%8+temp*i > -1 && KingPositionC%8+temp*j > -1 && KingPositionC%8+temp*j < 7){
+          temp++;
+        }
+        else{
+          break;
+        }
 	  temp++;
 	}
 	if(Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == "b" || Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == "q"){
