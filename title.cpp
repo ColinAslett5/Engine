@@ -54,7 +54,15 @@ int main(){
   int beta = 1000000;
   int alpha = -1000000;
   int player = 0;
-  //flipboard();
+  /*
+  draw();
+  flipboard();
+  draw();
+  flipboard();
+  draw();
+  flipboard();
+  draw();
+  */
   analyze(depth,beta,alpha,player);
   return 0;
 }
@@ -70,16 +78,20 @@ int analyze(int depth,int beta,int alpha,int player){
   vector<Node*> list = PossibleMove();
   int size = list.size();
   if(depth == 0 || list.size() == 0){
-    cout << endl;
-    cout << endl;
-    cout << endl;
+    //cout << "    Rating:" << rating() << endl;
+    //cout << endl;
+    //draw();
+    //cout << endl;
+    //cout << endl;
     cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
     return (rating()*(player*2-1));
   }
   player = 1-player;
   for(int i = 0;i < size;i++){
     string temp = Board[list[i]->newx][list[i]->newy];
+    //cout << list[i]->oldx << list[i]->oldy << "->" << list[i]->newx << list[i]->newy << " , ";
     MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
+    flipboard();
     int returnInt = analyze(depth-1,beta,alpha,player);
     flipboard();
     UndoMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece,temp);
@@ -759,7 +771,7 @@ bool KingSafe(){
 	}
       }
       if(KingPositionC/8+i*2 > -1 && KingPositionC/8+i*2 < 8 && KingPositionC%8+j > -1 && KingPositionC%8+j < 8){
-	if(Board[KingPositionC/8+i*2][KingPositionC%8+j*2] == "n"){
+	if(Board[KingPositionC/8+i*2][KingPositionC%8+j] == "n"){
 	  return false;
 	}
       }
