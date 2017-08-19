@@ -364,9 +364,9 @@ void Rook(int i,vector<Node*> &list){
 	}
 	Board[r][c] = "R";
 	Board[r][c+temp*j] = oldpiece;
-	temp++;//maybe should be inside of the if statement
-	if(c+temp*j < 8 && c+temp*j > -1){
-	  
+	//maybe should be inside of the if statement
+	if(c+temp*j < 7 && c+temp*j > -1){
+	  temp++;
 	}
 	else{
 	  break;
