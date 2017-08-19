@@ -359,7 +359,7 @@ void Rook(int i,vector<Node*> &list){
 	Board[r][c] = "R";
 	Board[r][c+temp*j] = oldpiece;
 	//maybe should be inside of the if statement
-	if(c+temp*j < 7 && c+temp*j > -1){
+	if(c+temp*j < 7 && c+temp*j > 0){
 	  temp++;
 	}
 	else{
@@ -402,7 +402,12 @@ void Rook(int i,vector<Node*> &list){
         }
         Board[r][c] = "R";
         Board[r+temp*j][c] = oldpiece;
-        temp++;
+	if(r+temp*j < 7 && r+temp*j > 0){
+	  temp++;
+	}
+	else{
+	  break;
+	}
       }
       if(Board[r+temp*j][c] == "r" || Board[r+temp*j][c] == "p" || Board[r+temp*j][c] == "q" || Board[r+temp*j][c] == "b" || Board[r+temp*j][c] == "n" || Board[r+temp*j][c] == "a"){
 	oldpiece = Board[r+temp*j][c];
@@ -447,7 +452,12 @@ void Bishop(int i,vector<Node*> &list){//done
 	  }
 	  Board[r][c] = "B";
 	  Board[r+temp*j][c+temp*k] = oldpiece;
-	  temp++;
+	  if(r+temp*j > 0 && r+temp*j < 7 && c+temp*j > 0 && c+temp*j < 7){
+	    temp++;
+	  }
+	  else{
+	    break;
+	  }
 	}
 	if(Board[r+temp*j][c+temp*k] == "p" || Board[r+temp*j][c+temp*k] == "r" || Board[r+temp*j][c+temp*k] == "b" || Board[r+temp*j][c+temp*k] == "q" || Board[r+temp*j][c+temp*k] == "n" || Board[r+temp*j][c+temp*k] == "a"){//enemy pieces
 	  oldpiece = Board[r+temp*j][c+temp*k];
@@ -491,7 +501,12 @@ void Queen(int i,vector<Node*> &list){
           }
           Board[r][c] = "Q";
           Board[r+temp*j][c+temp*k] = oldpiece;
-          temp++;
+	  if(r+temp*j > 0 && r+temp*j < 7 && c+temp*k > 0 && c+temp*k < 7){
+	    temp++;
+	  }
+	  else{
+	    break;
+	  }
         }
         if(Board[r+temp*j][c+temp*k] == "p" || Board[r+temp*j][c+temp*k] == "r" || Board[r+temp*j][c+temp*k] == "b" || Board[r+temp*j][c+\
 temp*k] == "q" || Board[r+temp*j][c+temp*k] == "n" || Board[r+temp*j][c+temp*k] == "a"){//enemy pieces
@@ -539,7 +554,12 @@ ROOK PART
         }
         Board[r][c] = "Q";
         Board[r][c+temp*j] = oldpiece;
-        temp++;
+	if(c+temp*j > 0 && c+temp*j < 7){
+	  temp++;
+	}
+	else{
+	  break;
+	}
       }
       if(Board[r][c+temp*j] == "r" || Board[r][c+temp*j] == "p" || Board[r][c+temp*j] == "q" || Board[r][c+temp*j] == "b" || Board[r][c+t\
 emp*j] == "n" || Board[r][c+temp*j] == "a"){
@@ -578,7 +598,12 @@ emp*j] == "n" || Board[r][c+temp*j] == "a"){
         }
         Board[r][c] = "Q";
         Board[r+temp*j][c] = oldpiece;
-        temp++;
+	if(r+temp*j > 0 && r+temp*j < 7){
+	  temp++;
+	}
+	else{
+	  break;
+	}
       }
       if(Board[r+temp*j][c] == "r" || Board[r+temp*j][c] == "p" || Board[r+temp*j][c] == "q" || Board[r+temp*j][c] == "b" || Board[r+temp\
 *j][c] == "n" || Board[r+temp*j][c] == "a"){
@@ -679,13 +704,13 @@ bool KingSafe(){
     for(int j = -1;j <= 1;j+=2){
       if(KingPositionC/8+temp*i > -1 && KingPositionC/8+temp*i < 8 && KingPositionC%8+temp*j > -1 && KingPositionC%8+temp*j < 8){
 	while(Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == " "){
-	if(KingPositionC/8+temp*i < 7 && KingPositionC%8+temp*i > -1 && KingPositionC%8+temp*j > -1 && KingPositionC%8+temp*j < 7){
-          temp++;
-        }
-        else{
-          break;
-        }
-	  temp++;
+	  if(KingPositionC/8+temp*i < 7 && KingPositionC/8+temp*i > 0 && KingPositionC%8+temp*j > 0 && KingPositionC%8+temp*j < 7){
+	    temp++;
+	  }
+	  else{
+	    break;
+	  }
+	  //temp++;
 	}
 	if(Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == "b" || Board[KingPositionC/8+temp*i][KingPositionC%8+temp*j] == "q"){
 	  return false;
@@ -698,7 +723,12 @@ bool KingSafe(){
   for(int i = -1;i <= 1;i+=2){
     if(KingPositionC/8 > -1 && KingPositionC/8 < 8 && KingPositionC%8+temp*i > -1 && KingPositionC%8+temp*i < 8){
       while(Board[KingPositionC/8][KingPositionC%8+temp*i] == " "){
-	temp++;
+	if(KingPositionC%8+temp*i > 0 && KingPositionC%8+temp*i < 7){
+	  temp++;
+	}
+	else{
+	  break;
+	}
       }
       if(Board[KingPositionC/8][KingPositionC%8+temp*i] == "r" || Board[KingPositionC/8][KingPositionC%8+temp*i] == "q"){
 	return false;
@@ -707,7 +737,12 @@ bool KingSafe(){
     temp = 1;
     if(KingPositionC/8+temp*i > -1 && KingPositionC/8+temp*i < 8 && KingPositionC%8 > -1 && KingPositionC%8 < 8){
       while(Board[KingPositionC/8+temp*i][KingPositionC%8] == " "){
-	temp++;
+	if(KingPositionC/8+temp*i > 0 && KingPositionC/8+temp*i < 7){
+	  temp++;
+	}
+	else{
+	  break;
+	}
       }
       if(Board[KingPositionC/8+temp*i][KingPositionC%8] == "r" || Board[KingPositionC/8+temp*i][KingPositionC%8] == "q"){
 	return false;
