@@ -5,10 +5,12 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <vector>
+#include <algorithm>
 using namespace std;
 //global board
 static int KingPositionC;
 static int KingPositionL;
+/*
 string Board[8][8]={
             {"r","n","b","q","a","b","n","r"},
             {"p","p","p","p","p","p","p","p"},
@@ -18,6 +20,16 @@ string Board[8][8]={
             {" "," "," "," "," "," "," "," "},
             {"P","P","P","P","P","P","P","P"},
             {"R","N","B","Q","A","B","N","R"}};
+*/
+string Board[8][8]={
+            {"r"," ","b","a","q"," ","n","r"},
+            {"p"," ","p","p"," "," ","p","p"},
+            {" ","p"," "," "," "," "," "," "},
+            {" "," ","b"," ","n","p"," "," "},
+            {" "," "," "," "," "," "," "," "},
+            {" "," ","N","P"," "," "," "," "},
+            {"P","P","P","B","P"," ","P","P"},
+            {"R"," "," ","A","Q","B","N","R"}};
 struct Node{
   int oldx;
   int oldy;
@@ -41,6 +53,7 @@ bool KingSafe();
 void flipboard();//flipping the board for the computer
 int rating();
 void draw();
+vector<Node*> SortMove(vector<Node*> list);
 int main(){
   //finding the kings posiiton
   while(Board[KingPositionC/8][KingPositionC%8] != "A"){
@@ -74,22 +87,55 @@ void draw(){
     cout << endl;
   }
 }
+//sorting through moves
+/*
+vector<Node*> SortMove(vector<Node*> list){
+  int score[list.size()];
+  for(int i = 0;i < list.size();i++){
+    string temp = Board[list[i]->newx][list[i]->newy];
+    MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
+    score[i] = (rating());
+    UndoMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece,temp);
+  }
+  vector<Node*> newlista;
+  vector<Node*> newlistb;
+  int size = list.size();
+  for(int i = 0;i < min(6,size);i++){
+    int max = -1000000;
+    int maxlocation = 0;
+    for(int j = 0;j < list.size();j++){
+      if(score[j] > max){
+	max = score[j];
+	maxlocation = j;
+      }
+    }
+    score[maxlocation] = -1000000;
+    //pushback certain location
+    Node* name = new Node();
+    name->oldx = list[maxlocation]->oldx;
+    name->oldy = list[maxlocation]->oldy;
+    name->newx = list[maxlocation]->newx;
+    name->newy = list[maxlocation]->newy;
+    name->piece = list[maxlocation]->piece;
+    newlista.push_back(name);
+  }
+  return newlista;
+}
+*/
 int analyze(int depth,int beta,int alpha,int player){
   vector<Node*> list = PossibleMove();
   int size = list.size();
   if(depth == 0 || list.size() == 0){
-    //cout << "    Rating:" << rating() << endl;
-    //cout << endl;
-    //draw();
-    //cout << endl;
-    //cout << endl;
     cout << "Rating: " << rating() << "   size: " << list.size() << "  Depth: " << depth << endl;
+    draw();
     return (rating()*(player*2-1));
   }
+  /* sorting moves */
+  //list = SortMove(list);  
+  /* sorting moves */
   player = 1-player;
   for(int i = 0;i < size;i++){
     string temp = Board[list[i]->newx][list[i]->newy];
-    //cout << list[i]->oldx << list[i]->oldy << "->" << list[i]->newx << list[i]->newy << " , ";
     MakeMove(list[i]->oldx,list[i]->oldy,list[i]->newx,list[i]->newy,list[i]->piece);
     flipboard();
     int returnInt = analyze(depth-1,beta,alpha,player);
